@@ -1,23 +1,55 @@
 @echo off
 setlocal enabledelayedexpansion
 title ChatBone
-mode con: cols=60 lines=30
+mode con: cols=75 lines=30
 color 0a
+:intro
+echo.
+echo                                     [][][]       __________         []
+echo                                    []    []     /  _    _  \        []
+echo                                    []    []    /__/      \__\    [][][][]
+echo   [][][]     [][][]    []    []    []  []     /    __/\__    \      []
+echo   []   []   []    []   []    []    [][]      / \__/ _  _ \__/ \     []
+echo   []        [][][][]   []    []    []  []    \    \__  __/    /     []
+echo   []        []         []    []    []    []   \__ /      \ __/      []
+echo   []        []    []   []    []    []    []    \ \__    __/ /       []
+echo   []         [][][]     [][][]      [][][]      \__________/        []
+echo.
+echo ###########################################################################
+echo                   Just a batch file bot to have some chat.
+echo.
+echo                              For Windows only
+echo FEATURES :
+echo.
+echo -) It is coded to respond normal conversations only but you can
+echo    extend its capabilities.
+echo.
+echo -) It can tell you about time, date and even weather.
+echo.
+echo -) It tells weather report by parsing data from wttr.in
+echo.
+echo -) There is a login system also coded in it which you can use
+echo    as per your needs.
+echo.
+echo -) You can use its simple structure to make a great AI bot.
+pause>nul
+cls
 set defaultUser=%userName%
 :loop
 set /p input=%userName%- 
-echo %input%|findstr /i "hi hello" >nul && echo Hello human.
-echo %input%|findstr /i "thanks thankyou" >nul && echo You are always welcome..
 echo %input%|findstr /i /c:"how are you" >nul && echo Everything is fine.. what about you?
-echo %input%|findstr /i "fine" >nul && echo Nice..
 echo %input%|findstr /i /c:"your name" >nul && echo My name is reuBot.
 echo %input%|findstr /i /c:"my name" >nul && echo Your username is %userName%. I think that's your name also..
-echo %input%|findstr /i "time" >nul && goto :getTime
-echo %input%|findstr /i "date" >nul && goto :getDate
+echo %input%|findstr /i /c:"weather-" >nul && (set place=!input:~8! & goto :getWeatherQuick)
 echo %input%|findstr /i "weather" >nul && goto :getWeather
 echo %input%|findstr /i "signup" >nul && goto :signup
 echo %input%|findstr /i "signin" >nul && goto :signin
 echo %input%|findstr /i "signout" >nul && goto :signout
+echo %input%|findstr /i "hi hello" >nul && echo Hello human.
+echo %input%|findstr /i "fine" >nul && echo Nice..
+echo %input%|findstr /i "time" >nul && goto :getTime
+echo %input%|findstr /i "date" >nul && goto :getDate
+echo %input%|findstr /i "thanks thankyou" >nul && echo You are always welcome..
 echo %input%|findstr /i "yes ya no nope na" >nul && echo OK..
 echo %input%|findstr /i "bye" >nul && (echo Bye human.. See you soon. & pause>nul & exit)
 echo.
@@ -64,24 +96,25 @@ goto :loop
 echo.
 echo Just tell me the place name..
 echo.
-set /p place=%userName%- 
+set /p place=%userName%-place- 
+:getWeatherQuick
 powershell -Command "(New-Object Net.WebClient).DownloadFile('http://wttr.in/%place%?0?T', 'w.txt')"
 set Counter=298
 for /f "tokens=* skip=297" %%x in (w.txt) do (
   set "Line!Counter!=%%x"
   set /a Counter+=1
 )
-findstr /i "smoke" "w.txt">nul && goto :smoke
 findstr /i /c:"shower in vicinity" "w.txt">nul && goto :smoke
-findstr /i "sunny clear" "w.txt">nul && goto :sunny
 findstr /i /c:"partly cloudy" "w.txt">nul && goto :partlyCloudy
-findstr /i "cloudy" "w.txt">nul && goto :smoke
 findstr /i /c:"patchy rain possible" "w.txt">nul && goto :patchyRainPossible
 findstr /i /c:"light rain" "w.txt">nul && goto :lightRain
 findstr /i /c:"light snow, mist" "w.txt">nul && goto :lightSnowMist
 findstr /i /c:"light snow" "w.txt">nul && goto :lightSnowMist
 findstr /i /c:"patchy heavy snow" "w.txt">nul && goto :patchyHeavySnow
 findstr /i /c:"light rain shower, mist" "w.txt">nul && goto :patchyRainPossible
+findstr /i "smoke" "w.txt">nul && goto :smoke
+findstr /i "sunny clear" "w.txt">nul && goto :sunny
+findstr /i "cloudy" "w.txt">nul && goto :smoke
 findstr /i "haze mist" "w.txt">nul && goto :haze
 echo Sorry I am not able to parse data.. Try with another place name.
 echo.
